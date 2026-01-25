@@ -1,0 +1,17 @@
+openapi: 3.1.0
+info:
+  title: Mood API
+  version: 1.0.0
+paths:
+  /mood:
+    get:
+      operationId: getMood
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string

@@ -60,5 +60,7 @@ For more information on using the Angular CLI, including detailed command refere
 
 ## Generating 
 
+```
 npm install @openapitools/openapi-generator-cli -g
-openapi-generator-cli generate -i api/spec.yaml -g typescript-angular -o src/app/api
+openapi-generator-cli generate -i api/docs.yaml -g typescript-angular -o src/app/api --additional-properties=basePath=http:localhost:8080
+```

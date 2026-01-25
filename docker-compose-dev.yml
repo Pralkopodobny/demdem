@@ -1,0 +1,23 @@
+services:
+  mood-api-dev:
+    build:
+      context: services/backend/mood
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:8080"
+    develop:
+      watch:
+        - action: sync
+          path: services/backend/mood
+          target: /app
+  frontend-dev:
+    build:
+      context: services/frontend/demdemfront
+      dockerfile: Dockerfile.dev
+    ports:
+      - "4200:4200"
+    develop:
+      watch:
+        - action: sync
+          path: services/frontend/demdemfront
+          target: /app

@@ -17,6 +17,6 @@ object GetMoodRecordsEndpoint {
 case class GetMoodRecordsEndpoint() {
   import GetMoodRecordsEndpoint.endpointSchema
 
-  val endpoint: ZServerEndpoint[Any, Any] = endpointSchema.zServerLogic(_ => ZIO.succeed(List("Happy", "Sad", "Excited2")))
+  val endpoint: ZServerEndpoint[Any, Any] = endpointSchema.zServerLogic(_ => ZIO.succeed(List("Happy", "Sad", "Excited")))
 
 }
