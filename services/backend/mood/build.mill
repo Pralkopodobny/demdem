@@ -1,0 +1,30 @@
+package build
+import mill.*, scalalib.*
+
+trait ProjectScalaModule extends ScalaModule {
+  def scalaVersion = "3.8.1"
+}
+
+object domain extends ProjectScalaModule {
+  def mvnDeps = Seq()
+
+  object test extends ScalaTests, TestModule.ZioTest {}
+}
+
+object api extends ProjectScalaModule {
+  def mvnDeps = Seq(
+    mvn"dev.zio::zio:2.1.24",
+    mvn"dev.zio::zio-interop-cats:23.1.0.13",
+    mvn"com.softwaremill.sttp.tapir::tapir-json-pickler:1.13.6",
+    mvn"com.softwaremill.sttp.tapir::tapir-core:1.13.6",
+    mvn"com.softwaremill.sttp.tapir::tapir-http4s-server-zio:1.13.6",
+    mvn"com.softwaremill.sttp.tapir::tapir-swagger-ui-bundle:1.13.6",
+    mvn"org.http4s::http4s-blaze-server:0.23.17",
+  )
+
+  def moduleDeps = Seq(
+    domain
+  )
+
+  object test extends ScalaTests, TestModule.ZioTest {}
+}
