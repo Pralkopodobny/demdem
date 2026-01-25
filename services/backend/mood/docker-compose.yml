@@ -1,0 +1,19 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+
+  api-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8080:8080"
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app

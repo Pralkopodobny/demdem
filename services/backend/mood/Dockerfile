@@ -5,12 +5,11 @@ COPY .mill-version .
 RUN ./mill --version
 
 COPY build.mill .
-COPY api api
-COPY domain domain
+COPY app app
 RUN chmod +x mill
-RUN ./mill --no-daemon api.assembly
+RUN ./mill --no-daemon app.api.assembly
 
 FROM eclipse-temurin:25-jdk-alpine-3.23
-COPY --from=builder /app/out/api/assembly.dest/out.jar ./app.jar
+COPY --from=builder /app/out/app/api/assembly.dest/out.jar ./app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -5,6 +5,8 @@ trait ProjectScalaModule extends ScalaModule {
   def scalaVersion = "3.8.1"
 }
 
+object app extends Module {
+
 object domain extends ProjectScalaModule {
   def mvnDeps = Seq()
 
@@ -28,3 +30,5 @@ object api extends ProjectScalaModule {
 
   object test extends ScalaTests, TestModule.ZioTest {}
 }
+}
+
