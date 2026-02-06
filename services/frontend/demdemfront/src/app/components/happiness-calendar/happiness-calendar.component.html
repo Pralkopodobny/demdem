@@ -1,0 +1,10 @@
+
+<div class="flex flex-wrap">
+@for (day of yearData; track day.day) {
+  <app-happiness-calendar-cell [happiness]="day.happiness" [day]="day.day"/>
+}
+</div>
+
+<app-happiness-calendar-month [month]="tempMonth()" [year]="tempYear()"/>>
+
+<button (click)="increment()">Click ME!</button>
