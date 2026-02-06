@@ -14,7 +14,12 @@ object app extends Module {
   def fmt = mill.scalalib.scalafmt.ScalafmtModule
 
   object domain extends ProjectScalaModule, ScalafixModule {
-    def mvnDeps = Seq()
+    def mvnDeps = Seq(
+      mvn"dev.zio::zio:2.1.24",
+      mvn"dev.zio::zio-test:2.1.24",
+      mvn"dev.zio::zio-test-sbt:2.1.24",
+      mvn"dev.zio::zio-test-magnolia:2.1.24"
+    )
 
     object test extends ScalaTests, TestModule.ZioTest {}
   }
@@ -22,6 +27,9 @@ object app extends Module {
   object db extends ProjectScalaModule {
     def mvnDeps = Seq(
       mvn"dev.zio::zio:2.1.24",
+      mvn"dev.zio::zio-test:2.1.24",
+      mvn"dev.zio::zio-test-sbt:2.1.24",
+      mvn"dev.zio::zio-test-magnolia:2.1.24",
       mvn"com.lihaoyi::scalasql-simple:0.3.0",
       mvn"org.postgresql:postgresql:42.7.9",
       mvn"org.flywaydb:flyway-core:11.13.2",
@@ -39,6 +47,9 @@ object app extends Module {
   object api extends ProjectScalaModule {
     def mvnDeps = Seq(
       mvn"dev.zio::zio:2.1.24",
+      mvn"dev.zio::zio-test:2.1.24",
+      mvn"dev.zio::zio-test-sbt:2.1.24",
+      mvn"dev.zio::zio-test-magnolia:2.1.24",
       mvn"dev.zio::zio-interop-cats:23.1.0.13",
       mvn"com.softwaremill.sttp.tapir::tapir-json-zio:1.13.6",
       mvn"com.softwaremill.sttp.tapir::tapir-core:1.13.6",
