@@ -23,8 +23,8 @@ services:
     develop:
       watch:
         - action: sync
-          path: services/backend/mood
-          target: /app
+          path: services/backend/mood/app
+          target: /workspace/app
         - action: rebuild
           path: services/backend/mood/build.mill
           
