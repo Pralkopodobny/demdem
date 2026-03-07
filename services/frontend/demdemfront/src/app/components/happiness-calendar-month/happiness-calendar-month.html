@@ -1,1 +1,7 @@
-<p>{{numberOfDays()}}</p>
+<p>This is {{month()}}.{{year()}}</p>
+
+<div class="grid grid-cols-7 gap-1 max-w-240">
+  @for (day of monthData(); track day.day) {
+    <app-happiness-calendar-cell [happiness]="day.happiness" [day]="day.day"/>
+  }
+</div>

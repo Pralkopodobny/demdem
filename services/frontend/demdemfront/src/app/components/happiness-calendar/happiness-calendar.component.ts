@@ -7,21 +7,17 @@ import {HappinessCalendarMonth} from '../happiness-calendar-month/happiness-cale
 @Component({
   selector: 'app-happiness-calendar',
   imports: [
-    HappinessCalendarCell,
     HappinessCalendarMonth
   ],
   templateUrl: './happiness-calendar.component.html',
   styleUrl: './happiness-calendar.component.css',
 })
 export class HappinessCalendar {
-  protected readonly Happiness = Happiness;
-  yearData: Day[] = randomYear()
-
   tempMonth = signal(1);
   tempYear = signal(2026);
 
   increment() {
-    if(this.tempMonth() === 12) {
+    if (this.tempMonth() === 12) {
       this.tempMonth.set(1);
       this.tempYear.update(cur => cur + 1)
     }
@@ -30,23 +26,4 @@ export class HappinessCalendar {
     }
 
   }
-}
-
-
-function randomYear(): Day[]  {
-  return Array.from(Array(365).keys()).map(d => {return {happiness: getRandomHappiness(), day: d}})
-}
-
-function getRandomHappiness() : Happiness {
-  let x = Math.random()
-  if (x < 0.1){
-    return Happiness.unset
-  }
-  if (x < 0.2) {
-    return Happiness.bad
-  }
-  if (x < 0.5) {
-    return Happiness.mid
-  }
-  return Happiness.good
 }

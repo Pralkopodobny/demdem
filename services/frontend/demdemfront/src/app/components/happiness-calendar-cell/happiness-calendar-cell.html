@@ -1,4 +1,6 @@
-@if (happiness() === Happiness.bad) {
+@if (day() <= 0) {
+  <div class="box-border size-32 border-4 p-4 invisible" >{{day()}}</div>
+} @else if (happiness() === Happiness.bad) {
   <div class="box-border size-32 border-4 p-4 bg-red-400 text-right" >{{day()}}</div>
 } @else if (happiness() === Happiness.good){
   <div class="box-border size-32 border-4 p-4 bg-green-500 text-right">{{day()}}</div>
