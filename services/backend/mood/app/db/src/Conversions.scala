@@ -23,7 +23,6 @@ object Conversions {
   extension (dbMoodRecord: Schema.DbMoodRecord) {
     def toDomain: MoodRecord = MoodRecord(
       id = dbMoodRecord.id,
-      userId = dbMoodRecord.userId,
       timestamp = dbMoodRecord.timestamp,
       moodLevel = dbMoodRecord.moodLevel.toDomain
     )
@@ -32,7 +31,6 @@ object Conversions {
   extension (moodRecord: MoodRecord) {
     def toDb: Schema.DbMoodRecord = Schema.DbMoodRecord(
       id = moodRecord.id,
-      userId = moodRecord.userId,
       timestamp = moodRecord.timestamp,
       moodLevel = moodRecord.moodLevel.toDb
     )

@@ -11,7 +11,7 @@ trait ProjectScalaModule extends ScalaModule {
 
 object app extends Module {
 
-  def fmt = mill.scalalib.scalafmt.ScalafmtModule
+  //def fmt = mill.scalalib.scalafmt.ScalafmtModule
 
   object domain extends ProjectScalaModule, ScalafixModule {
     def mvnDeps = Seq(

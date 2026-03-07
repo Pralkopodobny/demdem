@@ -16,7 +16,6 @@ object PostMoodRecordEndpoint {
   import sttp.tapir.generic.auto.*
 
   case class MoodRecordRequest(
-      userId: UUID,
       timestamp: Instant,
       moodLevel: String
   ) derives JsonCodec
@@ -38,7 +37,6 @@ case class PostMoodRecordEndpoint(repository: Repository) {
         .addMoodRecord(
           DbMoodRecord(
             id = id,
-            userId = request.userId,
             timestamp = request.timestamp,
             moodLevel = request.moodLevel match
               case "Good"    => Schema.DbMoodLevel.Good

@@ -8,5 +8,5 @@ enum MoodLevel:
   case Neutral
   case Bad
 
-case class MoodRecord(id: UUID, userId: UUID, timestamp: Instant, moodLevel: MoodLevel)
+case class MoodRecord(id: UUID, timestamp: Instant, moodLevel: MoodLevel)
 case class MoodUser(id: UUID, name: String)

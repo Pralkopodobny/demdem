@@ -18,12 +18,7 @@ object Schema {
       str => DbMoodLevel.valueOf(str)
     )
 
-  case class DbMoodUser(id: UUID)
-  object DbMoodUser extends SimpleTable[DbMoodUser] {
-    override def tableName = "users"
-  }
-
-  case class DbMoodRecord(id: UUID, userId: UUID, timestamp: Instant, moodLevel: DbMoodLevel)
+  case class DbMoodRecord(id: UUID, timestamp: Instant, moodLevel: DbMoodLevel)
 
   object DbMoodRecord extends SimpleTable[DbMoodRecord] {
     override def tableName = "moodRecords"

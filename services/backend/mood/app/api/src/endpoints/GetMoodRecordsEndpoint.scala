@@ -13,7 +13,6 @@ import demdem.mood.db.Repository
 object GetMoodRecordsEndpoint {
 
   case class MoodRecordResponse(
-      userId: UUID,
       timestamp: Instant,
       moodLevel: String
   ) derives JsonCodec
@@ -34,7 +33,6 @@ case class GetMoodRecordsEndpoint(repository: Repository) {
       response = records
         .map(r =>
           GetMoodRecordsEndpoint.MoodRecordResponse(
-            userId = r.userId,
             timestamp = r.timestamp,
             moodLevel = r.moodLevel.toString()
           )
