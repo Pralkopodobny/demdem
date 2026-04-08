@@ -10,6 +10,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 })
 export class App {
   client = inject(DefaultService);
-  protected readonly moo = toSignal(this.client.getMood(), { initialValue: [] });
+  protected readonly moo = signal('xd'); //toSignal(this.client.getMood(), { initialValue: [] });
   protected readonly title = signal('demdemfront');
 }
