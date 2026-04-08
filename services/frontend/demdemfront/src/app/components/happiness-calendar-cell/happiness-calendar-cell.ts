@@ -1,4 +1,4 @@
-import {Component, input, signal} from '@angular/core';
+import {Component, computed, input, signal} from '@angular/core';
 import {Happiness} from '../../model/Happiness';
 
 @Component({
@@ -13,4 +13,17 @@ export class HappinessCalendarCell {
   day = input.required<number>();
 
   protected readonly Happiness = Happiness;
+
+  classColor = computed(() => {
+    if (this.day() <= 0) return 'invisible';
+
+    const colors = {
+      [Happiness.unset]: 'bg-yellow-300',
+      [Happiness.bad]: 'bg-red-400',
+      [Happiness.mid]: 'bg-yellow-300',
+      [Happiness.good]: 'bg-green-500',
+    };
+
+    return colors[this.happiness()];
+  });
 }
