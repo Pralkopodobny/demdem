@@ -1,5 +1,6 @@
 import {Component, computed, input, signal} from '@angular/core';
 import {Happiness} from '../../model/Happiness';
+import {Day} from '../../model/Day';
 
 @Component({
   selector: 'app-happiness-calendar-cell',
@@ -9,21 +10,10 @@ import {Happiness} from '../../model/Happiness';
   standalone: true
 })
 export class HappinessCalendarCell {
-  happiness = input<Happiness>(Happiness.unset);
-  day = input.required<number>();
+  day = input.required<Day>()
+  active = input.required<boolean>()
 
   protected readonly Happiness = Happiness;
 
-  classColor = computed(() => {
-    if (this.day() <= 0) return 'invisible';
 
-    const colors = {
-      [Happiness.unset]: 'bg-yellow-300',
-      [Happiness.bad]: 'bg-red-400',
-      [Happiness.mid]: 'bg-yellow-300',
-      [Happiness.good]: 'bg-green-500',
-    };
-
-    return colors[this.happiness()];
-  });
 }

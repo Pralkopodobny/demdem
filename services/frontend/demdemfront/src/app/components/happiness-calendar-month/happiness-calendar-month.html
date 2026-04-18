@@ -1,13 +1,36 @@
 <p>This is {{month()}}.{{year()}}</p>
 
-<div class="grid grid-cols-7 gap-0.5 max-w-117 border-2 p-1">
+<div class="grid grid-cols-7 max-w-117 border-2">
   @for (label of ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']; track label) {
-    <div class="sticky text-center font-bold text-xs p-1 border-b-2 border-gray-200 mb-1 -mx-0.5">
+    <div class="sticky text-center font-bold text-xs p-1 border-b-2 border-gray-200">
       {{ label }}
     </div>
   }
 
-  @for (day of monthData(); track day.day) {
-    <app-happiness-calendar-cell [happiness]="day.happiness" [day]="day.day"/>
+  <!--TODO: Make global component with gradient definitions and add it to app.html-->
+  <svg style="width:0; height:0; position:absolute;" aria-hidden="true">
+    <defs>
+      <linearGradient id="heart-grad-1" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="transparent" />
+      </linearGradient>
+
+      <linearGradient id="heart-grad-2" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="50%" stop-color="#ef4444" />
+        <stop offset="50%" stop-color="transparent" />
+      </linearGradient>
+
+      <linearGradient id="heart-grad-3" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="100%" stop-color="#ef4444" />
+      </linearGradient>
+    </defs>
+  </svg>
+
+  @for (day of monthData(); track day.date) {
+    <div
+      class="border-r border-gray-200 nth-[7n]:border-r-0 min-h-12.5"
+      [class.bg-red-50]="day.date.day() == 6 || day.date.day() == 0">
+
+      <app-happiness-calendar-cell [day]="day" [active]="day.date.month() === month() - 1 && day.date.year() === year()"/>
+    </div>
   }
 </div>
