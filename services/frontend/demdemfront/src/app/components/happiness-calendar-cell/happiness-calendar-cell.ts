@@ -26,4 +26,14 @@ export class HappinessCalendarCell {
 
     return colors[this.happiness()];
   });
+
+  getFillPercentage(): number {
+    const fill = {
+      [Happiness.unset]: 0,
+      [Happiness.bad]: 0,
+      [Happiness.mid]: 50,
+      [Happiness.good]: 100,
+    };
+    return fill[this.happiness()];
+  }
 }
