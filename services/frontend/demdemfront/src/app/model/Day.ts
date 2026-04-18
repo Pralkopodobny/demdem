@@ -1,8 +1,7 @@
 import {Happiness} from './Happiness';
+import {Dayjs} from 'dayjs';
 
 export interface Day {
   happiness : Happiness;
-  day : number;
-  month: number;
-  year: number;
+  date : Dayjs
 }

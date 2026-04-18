@@ -1,5 +1,6 @@
 import {Component, computed, input, signal} from '@angular/core';
 import {Happiness} from '../../model/Happiness';
+import {Day} from '../../model/Day';
 
 @Component({
   selector: 'app-happiness-calendar-cell',
@@ -9,13 +10,11 @@ import {Happiness} from '../../model/Happiness';
   standalone: true
 })
 export class HappinessCalendarCell {
-  happiness = input<Happiness>(Happiness.unset);
-  day = input.required<number>();
+  day = input.required<Day>()
 
   protected readonly Happiness = Happiness;
 
   classColor = computed(() => {
-    if (this.day() <= 0) return 'invisible';
 
     const colors = {
       [Happiness.unset]: 'bg-yellow-300',
@@ -24,7 +23,7 @@ export class HappinessCalendarCell {
       [Happiness.good]: 'bg-green-500',
     };
 
-    return colors[this.happiness()];
+    return colors[this.day().happiness];
   });
 
   getFillPercentage(): number {
@@ -34,6 +33,6 @@ export class HappinessCalendarCell {
       [Happiness.mid]: 50,
       [Happiness.good]: 100,
     };
-    return fill[this.happiness()];
+    return fill[this.day().happiness];
   }
 }

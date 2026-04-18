@@ -36,13 +36,13 @@ function randomMonth(month: number, year: number): Day[]  {
   const firstDay = monthJs.day();
   const first = 1 - offset(firstDay)
 
+  let act = monthJs.add(offset(firstDay), 'day')
   for (let day = first; day <= numberOfDays; day++) {
     days.push({
       happiness: day <= 0 ? Happiness.unset : getRandomHappiness(),
-      day: day,
-      month: month,
-      year: year,
+      date: act
     })
+    act = monthJs.add(1, 'day')
   }
   return days;
 

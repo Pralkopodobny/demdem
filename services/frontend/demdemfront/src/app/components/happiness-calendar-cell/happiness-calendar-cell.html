@@ -4,10 +4,10 @@
 
       <!-- Heart Icon with Day Number -->
       <svg viewBox="0 0 24 24" class="w-full h-full max-w-[90%] max-h-[90%]">
-        @if (happiness() !== Happiness.unset) {
+        @if (day().happiness !== Happiness.unset) {
         <!-- The Heart -->
         <path
-          [attr.fill]="'url(#heart-grad-' + happiness() + ')'"
+          [attr.fill]="'url(#heart-grad-' + day().happiness + ')'"
           fill-opacity="0.6"
           stroke="#ef4444"
           stroke-width="1.2"
