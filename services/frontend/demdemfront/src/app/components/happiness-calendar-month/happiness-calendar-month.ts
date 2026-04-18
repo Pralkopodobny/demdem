@@ -2,7 +2,7 @@ import {Component, computed, input} from '@angular/core';
 import {HappinessCalendarCell} from '../happiness-calendar-cell/happiness-calendar-cell';
 import {Day} from '../../model/Day';
 import {Happiness} from '../../model/Happiness';
-import dayjs from 'dayjs';
+import dayjs, {Dayjs} from 'dayjs';
 
 @Component({
   selector: 'app-happiness-calendar-month',
@@ -19,33 +19,32 @@ export class HappinessCalendarMonth {
   monthData = computed(() => randomMonth(this.month(), this.year()))
 }
 
-function offset(firstWeekdayOfMonth: number): number {
-  return (firstWeekdayOfMonth + 6) % 7
+function startSpan(firstDate : Dayjs) : Dayjs {
+  return firstDate.subtract((firstDate.day() + 6) % 7, 'day')
 }
 
-function monthToMonthIndex(month: number): number {
-  const indexCandidate = month - 1;
-  return indexCandidate < 0 ? 11 : indexCandidate;
+function endSpan(firstDate : Dayjs) : Dayjs {
+  const lastDay = firstDate.add(1, 'month').subtract(1, 'day');
+  return lastDay.add((8 - lastDay.day()) % 7, 'day')
 }
 
 function randomMonth(month: number, year: number): Day[]  {
   const days = [];
 
   const monthJs = dayjs().month(month - 1).year(year).date(1)
-  const numberOfDays = monthJs.daysInMonth()
-  const firstDay = monthJs.day();
-  const first = 1 - offset(firstDay)
 
-  let act = monthJs.add(offset(firstDay), 'day')
-  for (let day = first; day <= numberOfDays; day++) {
+  let act = startSpan(monthJs)
+  const last = endSpan(monthJs)
+  
+  while (act.date() !== last.date() || act.month() !== last.month()) {
     days.push({
-      happiness: day <= 0 ? Happiness.unset : getRandomHappiness(),
+      happiness: getRandomHappiness(),
       date: act
     })
-    act = monthJs.add(1, 'day')
+    act = act.add(1, 'day')
   }
-  return days;
 
+  return days;
 }
 
 function getRandomHappiness() : Happiness {

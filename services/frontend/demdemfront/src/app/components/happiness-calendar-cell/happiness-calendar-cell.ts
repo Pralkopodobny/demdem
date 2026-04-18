@@ -11,28 +11,9 @@ import {Day} from '../../model/Day';
 })
 export class HappinessCalendarCell {
   day = input.required<Day>()
+  active = input.required<boolean>()
 
   protected readonly Happiness = Happiness;
 
-  classColor = computed(() => {
 
-    const colors = {
-      [Happiness.unset]: 'bg-yellow-300',
-      [Happiness.bad]: 'bg-red-400',
-      [Happiness.mid]: 'bg-yellow-300',
-      [Happiness.good]: 'bg-green-500',
-    };
-
-    return colors[this.day().happiness];
-  });
-
-  getFillPercentage(): number {
-    const fill = {
-      [Happiness.unset]: 0,
-      [Happiness.bad]: 0,
-      [Happiness.mid]: 50,
-      [Happiness.good]: 100,
-    };
-    return fill[this.day().happiness];
-  }
 }

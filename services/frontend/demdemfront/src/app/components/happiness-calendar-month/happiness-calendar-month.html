@@ -7,17 +7,6 @@
     </div>
   }
 
-  @for (i of [].constructor(35); track $index) {
-    <div
-      class="border-r border-gray-200 nth-[7n]:border-r-0 min-h-12.5"
-      [class.bg-red-50]="$index % 7 >= 5">
-
-    <div class="w-full aspect-square flex items-center justify-center text-gray-400 text-xs">
-      {{ $index + 1 }}
-    </div>
-    </div>
-  }
-
   <!--TODO: Make global component with gradient definitions and add it to app.html-->
   <svg style="width:0; height:0; position:absolute;" aria-hidden="true">
     <defs>
@@ -36,7 +25,12 @@
     </defs>
   </svg>
 
-  @for (day of monthData(); track day.day) {
-    <app-happiness-calendar-cell [happiness]="day.happiness" [day]="day.day"/>
+  @for (day of monthData(); track day.date) {
+    <div
+      class="border-r border-gray-200 nth-[7n]:border-r-0 min-h-12.5"
+      [class.bg-red-50]="day.date.day() == 6 || day.date.day() == 0">
+
+      <app-happiness-calendar-cell [day]="day" [active]="day.date.month() === month() - 1 && day.date.year() === year()"/>
+    </div>
   }
 </div>
