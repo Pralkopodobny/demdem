@@ -3,6 +3,9 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HappinessCalendarCell } from './happiness-calendar-cell';
 import {Happiness} from '../../model/Happiness';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 
 describe('HappinessCalendarCell', () => {
   let component: HappinessCalendarCell;
@@ -16,7 +19,7 @@ describe('HappinessCalendarCell', () => {
 
     fixture = TestBed.createComponent(HappinessCalendarCell);
     component = fixture.componentInstance;
-    fixture.componentRef.setInput('day', { happiness: Happiness.mid, date: dayjs() });
+    fixture.componentRef.setInput('day', { happiness: Happiness.mid, date: dayjs.utc() });
     fixture.componentRef.setInput('active', true);
     await fixture.whenStable();
   });

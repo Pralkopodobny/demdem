@@ -3,6 +3,9 @@ import {HappinessCalendarCell} from '../happiness-calendar-cell/happiness-calend
 import {Day} from '../../model/Day';
 import {Happiness} from '../../model/Happiness';
 import dayjs, {Dayjs} from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 
 @Component({
   selector: 'app-happiness-calendar-month',
@@ -43,11 +46,11 @@ function endSpan(firstDate : Dayjs) : Dayjs {
 function randomMonth(month: number, year: number): Day[]  {
   const days = [];
 
-  const monthJs = dayjs().month(month - 1).year(year).date(1)
+  const monthJs = dayjs.utc().month(month - 1).year(year).date(1).startOf('day');
 
   let act = startSpan(monthJs)
   const last = endSpan(monthJs)
-  
+
   while (act.date() !== last.date() || act.month() !== last.month()) {
     days.push({
       happiness: getRandomHappiness(),

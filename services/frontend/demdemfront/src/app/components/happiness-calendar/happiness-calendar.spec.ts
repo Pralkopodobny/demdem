@@ -1,6 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { HappinessCalendar } from './happiness-calendar.component';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
+dayjs.extend(utc);
 
 describe('HappynessCalendar', () => {
   let component: HappinessCalendar;
