@@ -31,7 +31,7 @@
 
   <!-- Mood Picker Popup -->
   @if (isPicking()) {
-    <div class="absolute z-20 bg-white border border-gray-300 shadow-xl rounded-lg p-1 flex gap-1 -top-10 left-1/2 -translate-x-1/2">
+    <div [class]="alignmentClass()" class="absolute z-20 bg-white border border-gray-300 shadow-xl rounded-lg p-1 flex gap-1 -top-10">
       <button (click)="selectMood(Happiness.bad); $event.stopPropagation()"
               class="hover:bg-red-100 p-1 rounded cursor-pointer transition-colors" title="Bad">😞</button>
       <button (click)="selectMood(Happiness.mid); $event.stopPropagation()"

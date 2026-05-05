@@ -16,6 +16,13 @@ export class HappinessCalendarCell {
 
   isPicking = signal(false);
 
+  alignmentClass = computed(() => {
+    const dayOfWeek = this.day().date.day();
+    if (dayOfWeek === 1) return 'left-0'; // Monday
+    if (dayOfWeek === 0) return 'right-0'; // Sunday
+    return 'left-1/2 -translate-x-1/2';
+  });
+
   protected readonly Happiness = Happiness;
 
   togglePicking() {
