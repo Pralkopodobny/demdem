@@ -1,0 +1,16 @@
+[package]
+name = "mood-rs"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+axum = "0.8.9"
+serde = "1.0.228"
+tokio = { version = "1.52.1", features = ["full"] }
+diesel = { version = "2.3.7", features = ["postgres", "chrono", "uuid"] }
+diesel_migrations = { version = "2.3.1" }
+diesel-async = { version = "0.8.0", features = ["pool", "deadpool", "postgres"] }
+deadpool = {version = "0.13.0", features = ["managed"]}
+dotenvy = "0.15"
+uuid = { version = "1.23.1", features = ["serde", "v4"] }
+chrono = { version = "0.4.44", features = ["serde"]}

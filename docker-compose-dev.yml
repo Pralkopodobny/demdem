@@ -4,30 +4,34 @@ services:
     image: postgres:latest
     environment:
       - POSTGRES_USER=user
+      - PGUSER=user
       - POSTGRES_PASSWORD=pass
     ports:
       - "5432:5432"
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 2s
+      timeout: 2s
+      retries: 15
 
-  mood-api-dev:
+  mood-rs:
     build:
-      context: services/backend/mood
-      dockerfile: Dockerfile.dev
+      context: services/backend/mood-rs
+      dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "3000:3000"
     environment:
-      - DB_USER=user
-      - DB_PASSWORD=pass
-      - DB_HOST=mood-db
-      - DB_PORT=5432
+      - DATABASE_URL=postgres://user:pass@mood-db:5432
+    depends_on:
+      mood-db:
+       condition: service_healthy
     develop:
       watch:
         - action: sync
-          path: services/backend/mood/app
-          target: /workspace/app
-        - action: rebuild
-          path: services/backend/mood/build.mill
-          
+          path: services/backend/mood-rs
+          target: /app
+
   frontend-dev:
     build:
       context: services/frontend/demdemfront
