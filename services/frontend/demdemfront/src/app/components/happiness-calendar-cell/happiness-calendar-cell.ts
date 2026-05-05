@@ -1,6 +1,7 @@
 import {Component, computed, input, output, signal} from '@angular/core';
 import {Happiness} from '../../model/Happiness';
 import {Day} from '../../model/Day';
+import {HEART_SHAPE} from '../../constants/icons';
 
 @Component({
   selector: 'app-happiness-calendar-cell',
@@ -24,6 +25,7 @@ export class HappinessCalendarCell {
   });
 
   protected readonly Happiness = Happiness;
+  protected readonly HEART_SHAPE = HEART_SHAPE;
 
   togglePicking() {
     if (!this.active()) return;
