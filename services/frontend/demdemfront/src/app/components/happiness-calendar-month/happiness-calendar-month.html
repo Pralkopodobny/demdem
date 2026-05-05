@@ -30,7 +30,10 @@
       class="border-r border-gray-200 nth-[7n]:border-r-0 min-h-12.5"
       [class.bg-red-50]="day.date.day() == 6 || day.date.day() == 0">
 
-      <app-happiness-calendar-cell [day]="day" [active]="day.date.month() === month() - 1 && day.date.year() === year()"/>
+      <app-happiness-calendar-cell
+        [day]="day"
+        [active]="day.date.month() === month() - 1 && day.date.year() === year()"
+        (moodSelected)="onMoodSelected(day, $event)"/>
     </div>
   }
 </div>

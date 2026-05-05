@@ -1,4 +1,4 @@
-import {Component, computed, input} from '@angular/core';
+import {Component, computed, effect, input, signal} from '@angular/core';
 import {HappinessCalendarCell} from '../happiness-calendar-cell/happiness-calendar-cell';
 import {Day} from '../../model/Day';
 import {Happiness} from '../../model/Happiness';
@@ -16,7 +16,19 @@ export class HappinessCalendarMonth {
   month = input.required<number>();
   year = input.required<number>();
 
-  monthData = computed(() => randomMonth(this.month(), this.year()))
+  monthData = signal<Day[]>([]);
+
+  constructor() {
+    effect(() => {
+      this.monthData.set(randomMonth(this.month(), this.year()));
+    });
+  }
+
+  onMoodSelected(day: Day, happiness: Happiness) {
+    this.monthData.update(days => days.map(d =>
+      d.date.isSame(day.date, 'day') ? {...d, happiness} : d
+    ));
+  }
 }
 
 function startSpan(firstDate : Dayjs) : Dayjs {
