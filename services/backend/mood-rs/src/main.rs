@@ -16,6 +16,7 @@ use diesel_async::{AsyncPgConnection, RunQueryDsl};
 use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
 use dotenvy::dotenv;
 use serde::{Deserialize, Serialize};
+use tower_http::cors::{Any, CorsLayer};
 use std::env;
 use std::sync::Arc;
 use uuid::Uuid;
@@ -117,13 +118,19 @@ async fn main() {
 
         Ok(Json(result))
     }
+    
+    let cors_layer = CorsLayer::new()
+        .allow_origin(Any)  // Open access to selected route
+        .allow_methods(Any)
+        .allow_headers(Any);
 
     // build our application with a single route
     let app = Router::new()
         .route("/", get(|| async { "Hello, World!" }))
         .route("/moods", get(get_moods_handler))
         .route("/moods", post(post_moods_handler))
-        .with_state(state);
+        .with_state(state)
+        .layer(cors_layer);
 
     // run our app with hyper, listening globally on port 3000
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
