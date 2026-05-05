@@ -12,5 +12,5 @@ diesel_migrations = { version = "2.3.1" }
 diesel-async = { version = "0.8.0", features = ["pool", "deadpool", "postgres"] }
 deadpool = {version = "0.13.0", features = ["managed"]}
 dotenvy = "0.15"
-uuid = { version = "1.23.1", features = ["serde"] }
+uuid = { version = "1.23.1", features = ["serde", "v4"] }
 chrono = { version = "0.4.44", features = ["serde"]}
