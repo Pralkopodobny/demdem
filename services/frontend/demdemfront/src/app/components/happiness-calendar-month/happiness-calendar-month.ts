@@ -1,9 +1,10 @@
-import {Component, computed, effect, input, signal} from '@angular/core';
+import {Component, computed, effect, inject, input, signal} from '@angular/core';
 import {HappinessCalendarCell} from '../happiness-calendar-cell/happiness-calendar-cell';
 import {Day} from '../../model/Day';
 import {Happiness} from '../../model/Happiness';
 import dayjs, {Dayjs} from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import {MoodDataService, ProcessedMoodEntry} from '../../api/mood-data.service';
 
 dayjs.extend(utc);
 
@@ -20,58 +21,61 @@ export class HappinessCalendarMonth {
   year = input.required<number>();
 
   monthData = signal<Day[]>([]);
+  
+  private moodService = inject(MoodDataService);
 
   constructor() {
     effect(() => {
-      this.monthData.set(randomMonth(this.month(), this.year()));
+      const m = this.month();
+      const y = this.year();
+      this.moodService.getMoods().subscribe(entries => {
+        this.monthData.set(this.generateMonthData(m, y, entries));
+      });
     });
   }
 
   onMoodSelected(day: Day, happiness: Happiness) {
+    // 1. Optimistically update UI
     this.monthData.update(days => days.map(d =>
       d.date.isSame(day.date, 'day') ? {...d, happiness} : d
     ));
+
+    // 2. Persist to backend
+    this.moodService.saveMood(day.date, happiness).subscribe({
+      error: (err) => {
+        console.error('Failed to save mood', err);
+        // TODO: Rollback UI on error if needed
+      }
+    });
+  }
+
+  private generateMonthData(month: number, year: number, entries: ProcessedMoodEntry[]): Day[] {
+    const days: Day[] = [];
+    const monthJs = dayjs.utc().month(month - 1).year(year).date(1).startOf('day');
+
+    let act = startSpan(monthJs);
+    const last = endSpan(monthJs);
+
+    while (!act.isSame(last, 'day')) {
+      // Find if we have a mood for this date in the backend data
+      const entry = entries.find(e => e.date.isSame(act, 'day'));
+      
+      days.push({
+        happiness: entry ? entry.happiness : Happiness.unset,
+        date: act
+      });
+      act = act.add(1, 'day');
+    }
+
+    return days;
   }
 }
 
 function startSpan(firstDate : Dayjs) : Dayjs {
-  return firstDate.subtract((firstDate.day() + 6) % 7, 'day')
+  return firstDate.subtract((firstDate.day() + 6) % 7, 'day').startOf('day');
 }
 
 function endSpan(firstDate : Dayjs) : Dayjs {
   const lastDay = firstDate.add(1, 'month').subtract(1, 'day');
-  return lastDay.add((8 - lastDay.day()) % 7, 'day')
-}
-
-function randomMonth(month: number, year: number): Day[]  {
-  const days = [];
-
-  const monthJs = dayjs.utc().month(month - 1).year(year).date(1).startOf('day');
-
-  let act = startSpan(monthJs)
-  const last = endSpan(monthJs)
-
-  while (act.date() !== last.date() || act.month() !== last.month()) {
-    days.push({
-      happiness: getRandomHappiness(),
-      date: act
-    })
-    act = act.add(1, 'day')
-  }
-
-  return days;
-}
-
-function getRandomHappiness() : Happiness {
-  let x = Math.random()
-  if (x < 0.1){
-    return Happiness.unset
-  }
-  if (x < 0.2) {
-    return Happiness.bad
-  }
-  if (x < 0.5) {
-    return Happiness.mid
-  }
-  return Happiness.good
+  return lastDay.add((8 - lastDay.day()) % 7, 'day').startOf('day');
 }
