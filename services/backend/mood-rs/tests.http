@@ -1,4 +1,7 @@
 POST http://localhost:3000/moods
 Content-Type: application/json
 
-{ "moodlevel": "bad" }
+{ 
+    "timestamp": "2011-10-05T14:48:00.000Z",
+    "moodlevel": "bad"
+}

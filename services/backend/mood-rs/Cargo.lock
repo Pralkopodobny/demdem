@@ -779,6 +779,7 @@ dependencies = [
  "diesel_migrations",
  "dotenvy",
  "serde",
+ "serde_json",
  "tokio",
  "uuid",
 ]

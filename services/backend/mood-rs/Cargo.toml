@@ -14,3 +14,4 @@ deadpool = {version = "0.13.0", features = ["managed"]}
 dotenvy = "0.15"
 uuid = { version = "1.23.1", features = ["serde", "v4"] }
 chrono = { version = "0.4.44", features = ["serde"]}
+serde_json = "1.0.149"

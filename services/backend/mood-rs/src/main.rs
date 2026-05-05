@@ -7,7 +7,7 @@ use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::routing::post;
 use axum::{Json, Router, routing::get};
-use chrono::Utc;
+use chrono::{DateTime, NaiveDate, NaiveDateTime, Utc};
 use deadpool::managed;
 use diesel::{Connection, PgConnection, insert_into};
 use diesel_async::pooled_connection::AsyncDieselConnectionManager;
@@ -45,7 +45,17 @@ use diesel::prelude::*;
 
 #[derive(Serialize, Deserialize)]
 struct CreateMood {
+    timestamp: DateTime<Utc>,
     moodlevel: String,
+}
+
+#[test]
+fn test_add() {
+    let s = CreateMood {
+       timestamp: Utc::now(),
+       moodlevel: String::from("xD")
+    };
+    println!("{:?}", serde_json::to_string(&s));
 }
 
 #[tokio::main]
@@ -98,7 +108,7 @@ async fn main() {
         let result = insert_into(moods)
             .values((
                 moodlevel.eq(payload.moodlevel),
-                timestamp.eq(Utc::now()),
+                timestamp.eq(payload.timestamp),
                 id.eq(Uuid::new_v4()),
             ))
             .execute(&mut connection)
