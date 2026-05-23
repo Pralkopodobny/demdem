@@ -13,6 +13,13 @@ use uuid::Uuid;
 use crate::CreateMood;
 use crate::state::AppState;
 
+#[utoipa::path(
+    get,
+    path = "/moods",
+    responses(
+        (status = 200, description = "List all moods", body = [Mood])
+    )
+)]
 pub(crate) async fn get_moods_handler(
     State(state): State<Arc<AppState>>,
 ) -> Result<impl IntoResponse, StatusCode> {
@@ -32,6 +39,14 @@ pub(crate) async fn get_moods_handler(
 }
 
 
+#[utoipa::path(
+    post,
+    path = "/moods",
+    request_body = CreateMood,
+    responses(
+        (status = 200, description = "Mood created successfully", body = usize)
+    )
+)]
 pub(crate) async fn post_moods_handler(
     State(state): State<Arc<AppState>>,
     Json(payload): Json<CreateMood>,

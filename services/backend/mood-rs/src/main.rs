@@ -42,8 +42,10 @@ pub fn establish_single_connection() -> PgConnection {
 
 use crate::state::AppState;
 
-#[derive(Serialize, Deserialize)]
-struct CreateMood {
+use utoipa::ToSchema;
+
+#[derive(Serialize, Deserialize, ToSchema)]
+pub struct CreateMood {
     timestamp: DateTime<Utc>,
     moodlevel: String,
 }
@@ -56,6 +58,24 @@ fn test_add() {
     };
     println!("{:?}", serde_json::to_string(&s));
 }
+
+use utoipa::OpenApi;
+use utoipa_swagger_ui::SwaggerUi;
+
+#[derive(OpenApi)]
+#[openapi(
+    paths(
+        endpoints::get_moods_handler,
+        endpoints::post_moods_handler,
+    ),
+    components(
+        schemas(models::Mood, CreateMood)
+    ),
+    tags(
+        (name = "mood", description = "Mood management API")
+    )
+)]
+struct ApiDoc;
 
 #[tokio::main]
 async fn main() {
@@ -72,6 +92,7 @@ async fn main() {
 
     // build our application with a single route
     let app = Router::new()
+        .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .route("/", get(|| async { "Hello, World!" }))
         .route("/moods", get(endpoints::get_moods_handler))
         .route("/moods", post(endpoints::post_moods_handler))
