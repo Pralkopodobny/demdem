@@ -44,19 +44,12 @@ use crate::state::AppState;
 
 use utoipa::ToSchema;
 
+use crate::models::MoodLevel;
+
 #[derive(Serialize, Deserialize, ToSchema)]
 pub struct CreateMood {
-    timestamp: DateTime<Utc>,
-    moodlevel: String,
-}
-
-#[test]
-fn test_add() {
-    let s = CreateMood {
-       timestamp: Utc::now(),
-       moodlevel: String::from("xD")
-    };
-    println!("{:?}", serde_json::to_string(&s));
+    pub timestamp: DateTime<Utc>,
+    pub moodlevel: MoodLevel,
 }
 
 use utoipa::OpenApi;
@@ -69,10 +62,19 @@ use utoipa_swagger_ui::SwaggerUi;
         endpoints::post_moods_handler,
     ),
     components(
-        schemas(models::Mood, CreateMood)
+        schemas(models::Mood, models::MoodLevel, CreateMood)
     ),
     tags(
-        (name = "mood", description = "Mood management API")
+        (name = "mood", description = "Mood management endpoints")
+    ),
+    info(
+        title = "DemDem Mood API",
+        version = "1.0.0",
+        description = "API for tracking and managing daily moods in the DemDem application.",
+        license(
+            name = "MIT",
+            url = "https://opensource.org/licenses/MIT"
+        )
     )
 )]
 struct ApiDoc;

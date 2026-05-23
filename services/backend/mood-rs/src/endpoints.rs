@@ -18,7 +18,8 @@ use crate::state::AppState;
     path = "/moods",
     responses(
         (status = 200, description = "List all moods", body = [Mood])
-    )
+    ),
+    tag = "mood"
 )]
 pub(crate) async fn get_moods_handler(
     State(state): State<Arc<AppState>>,
@@ -45,7 +46,8 @@ pub(crate) async fn get_moods_handler(
     request_body = CreateMood,
     responses(
         (status = 200, description = "Mood created successfully", body = usize)
-    )
+    ),
+    tag = "mood"
 )]
 pub(crate) async fn post_moods_handler(
     State(state): State<Arc<AppState>>,
