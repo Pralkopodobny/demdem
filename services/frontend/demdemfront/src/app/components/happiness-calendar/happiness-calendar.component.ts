@@ -1,8 +1,6 @@
 import {Component, signal} from '@angular/core';
-import {HappinessCalendarCell} from '../happiness-calendar-cell/happiness-calendar-cell';
-import {Happiness} from '../../model/Happiness';
-import {Day} from '../../model/Day';
 import {HappinessCalendarMonth} from '../happiness-calendar-month/happiness-calendar-month';
+import dayjs from 'dayjs';
 
 @Component({
   selector: 'app-happiness-calendar',
@@ -13,17 +11,13 @@ import {HappinessCalendarMonth} from '../happiness-calendar-month/happiness-cale
   styleUrl: './happiness-calendar.component.css',
 })
 export class HappinessCalendar {
-  tempMonth = signal(1);
-  tempYear = signal(2026);
+  viewDate = signal(dayjs().utc().startOf('month'));
 
   increment() {
-    if (this.tempMonth() === 12) {
-      this.tempMonth.set(1);
-      this.tempYear.update(cur => cur + 1)
-    }
-    else {
-      this.tempMonth.update(cur => cur + 1);
-    }
+    this.viewDate.update(d => d.add(1, 'month'))
+  }
 
+  decrement() {
+    this.viewDate.update(d => d.subtract(1, 'month'))
   }
 }

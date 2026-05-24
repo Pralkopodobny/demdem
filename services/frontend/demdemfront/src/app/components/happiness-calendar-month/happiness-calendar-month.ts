@@ -1,4 +1,4 @@
-import {Component, computed, effect, inject, input, signal} from '@angular/core';
+import {Component, computed, effect, inject, input, output, signal} from '@angular/core';
 import {HappinessCalendarCell} from '../happiness-calendar-cell/happiness-calendar-cell';
 import {Day} from '../../model/Day';
 import {Happiness} from '../../model/Happiness';
@@ -17,23 +17,25 @@ dayjs.extend(utc);
   styleUrl: './happiness-calendar-month.css',
 })
 export class HappinessCalendarMonth {
-  month = input.required<number>();
-  year = input.required<number>();
+  viewDate = input.required<Dayjs>();
 
   monthData = signal<Day[]>([]);
-  
+
+  monthName = computed(() => this.viewDate().format('MMMM YYYY'));
+
   private moodService = inject(MoodDataService);
+
+  onPrevious = output<void>()
+  onNext = output<void>()
 
   constructor() {
     effect(() => {
-      const m = this.month();
-      const y = this.year();
-      const monthJs = dayjs.utc().month(m - 1).year(y).date(1).startOf('day');
-      const start = startSpan(monthJs);
-      const end = endSpan(monthJs);
+      const date = this.viewDate().date(1).startOf('day');
+      const start = startSpan(date);
+      const end = endSpan(date);
 
       this.moodService.getMoodsRange(start, end).subscribe(entries => {
-        this.monthData.set(this.generateMonthData(m, y, entries));
+        this.monthData.set(this.generateMonthData(date, entries));
       });
     });
   }
@@ -53,9 +55,8 @@ export class HappinessCalendarMonth {
     });
   }
 
-  private generateMonthData(month: number, year: number, entries: ProcessedMoodEntry[]): Day[] {
+  private generateMonthData(monthJs: dayjs.Dayjs, entries: ProcessedMoodEntry[]): Day[] {
     const days: Day[] = [];
-    const monthJs = dayjs.utc().month(month - 1).year(year).date(1).startOf('day');
 
     let act = startSpan(monthJs);
     const last = endSpan(monthJs);
@@ -63,7 +64,7 @@ export class HappinessCalendarMonth {
     while (!act.isSame(last, 'day')) {
       // Find if we have a mood for this date in the backend data
       const entry = entries.find(e => e.date.isSame(act, 'day'));
-      
+
       days.push({
         happiness: entry ? entry.happiness : Happiness.unset,
         date: act

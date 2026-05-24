@@ -1,3 +1,1 @@
-<app-happiness-calendar-month [month]="tempMonth()" [year]="tempYear()"/>>
-
-<button (click)="increment()">Click ME!</button>
+<app-happiness-calendar-month [viewDate]="viewDate()" (onPrevious)="decrement()" (onNext)="increment()"/>
