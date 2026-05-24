@@ -28,7 +28,11 @@ export class HappinessCalendarMonth {
     effect(() => {
       const m = this.month();
       const y = this.year();
-      this.moodService.getMoods().subscribe(entries => {
+      const monthJs = dayjs.utc().month(m - 1).year(y).date(1).startOf('day');
+      const start = startSpan(monthJs);
+      const end = endSpan(monthJs);
+
+      this.moodService.getMoodsRange(start, end).subscribe(entries => {
         this.monthData.set(this.generateMonthData(m, y, entries));
       });
     });

@@ -1,25 +1,23 @@
 pub mod models;
 pub mod schema;
+pub mod endpoints;
+pub mod state;
 
-use crate::models::Mood;
-use axum::extract::State;
-use axum::http::StatusCode;
-use axum::response::IntoResponse;
-use axum::routing::post;
-use axum::{Json, Router, routing::get};
-use chrono::{DateTime, NaiveDate, NaiveDateTime, Utc};
+use axum::routing::put;
+use axum::routing::delete;
+use axum::{routing::get, Router};
+use chrono::NaiveDate;
 use deadpool::managed;
-use diesel::{Connection, PgConnection, insert_into};
-use diesel_async::pooled_connection::AsyncDieselConnectionManager;
+use diesel::{Connection, PgConnection};
 use diesel_async::pooled_connection::deadpool::Pool;
-use diesel_async::{AsyncPgConnection, RunQueryDsl};
-use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
+use diesel_async::pooled_connection::AsyncDieselConnectionManager;
+use diesel_async::AsyncPgConnection;
+use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use dotenvy::dotenv;
 use serde::{Deserialize, Serialize};
-use tower_http::cors::{Any, CorsLayer};
 use std::env;
 use std::sync::Arc;
-use uuid::Uuid;
+use tower_http::cors::{Any, CorsLayer};
 
 pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations");
 
@@ -42,93 +40,77 @@ pub fn establish_single_connection() -> PgConnection {
         .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
 }
 
-use diesel::prelude::*;
 
-#[derive(Serialize, Deserialize)]
-struct CreateMood {
-    timestamp: DateTime<Utc>,
-    moodlevel: String,
+use crate::state::AppState;
+
+use utoipa::ToSchema;
+
+use crate::models::MoodLevel;
+
+#[derive(Serialize, Deserialize, ToSchema)]
+pub struct CreateMood {
+    pub day: NaiveDate,
+    pub moodlevel: MoodLevel,
 }
 
-#[test]
-fn test_add() {
-    let s = CreateMood {
-       timestamp: Utc::now(),
-       moodlevel: String::from("xD")
-    };
-    println!("{:?}", serde_json::to_string(&s));
+#[derive(Serialize, Deserialize, ToSchema, utoipa::IntoParams)]
+pub struct MoodRangeQuery {
+    pub from: NaiveDate,
+    pub to: NaiveDate,
 }
+
+use utoipa::OpenApi;
+use utoipa_swagger_ui::SwaggerUi;
+
+#[derive(OpenApi)]
+#[openapi(
+    paths(
+        endpoints::get_moods_handler,
+        endpoints::get_moods_between_dates_handler,
+        endpoints::get_mood_by_id_handler,
+        endpoints::put_moods_handler,
+        endpoints::delete_mood_by_day_handler,
+    ),
+    components(
+        schemas(models::Mood, models::MoodLevel, CreateMood, MoodRangeQuery)
+    ),
+    tags(
+        (name = "mood", description = "Mood management endpoints")
+    ),
+    info(
+        title = "DemDem Mood API",
+        version = "1.0.0",
+        description = "API for tracking and managing daily moods in the DemDem application.",
+        license(
+            name = "MIT",
+            url = "https://opensource.org/licenses/MIT"
+        )
+    )
+)]
+struct ApiDoc;
 
 #[tokio::main]
 async fn main() {
-    println!("Siemano");
-    use self::schema::moods::dsl::*;
-
     let c = &mut establish_single_connection();
     let _ = c.run_pending_migrations(MIGRATIONS);
     let pool = establish_connection();
 
-    struct AppState {
-        pool: managed::Pool<AsyncDieselConnectionManager<AsyncPgConnection>>,
-    }
-
     let state = Arc::new(AppState { pool });
 
-    // let results = moods.select(Mood::as_select()).load(connection);
-
-    async fn get_moods_handler(
-        State(state): State<Arc<AppState>>,
-    ) -> Result<impl IntoResponse, StatusCode> {
-        let mut connection = state
-            .pool
-            .get()
-            .await
-            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-        let result = moods
-            .select(Mood::as_select())
-            .load(&mut connection)
-            .await
-            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-        Ok(Json(result))
-    }
-
-    async fn post_moods_handler(
-        State(state): State<Arc<AppState>>,
-        Json(payload): Json<CreateMood>,
-    ) -> Result<impl IntoResponse, StatusCode> {
-        use schema::moods::dsl::*;
-
-        let mut connection = state
-            .pool
-            .get()
-            .await
-            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-        let result = insert_into(moods)
-            .values((
-                moodlevel.eq(payload.moodlevel),
-                timestamp.eq(payload.timestamp),
-                id.eq(Uuid::new_v4()),
-            ))
-            .execute(&mut connection)
-            .await
-            .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
-
-        Ok(Json(result))
-    }
-    
     let cors_layer = CorsLayer::new()
-        .allow_origin(Any)  // Open access to selected route
+        .allow_origin(Any)
         .allow_methods(Any)
         .allow_headers(Any);
 
     // build our application with a single route
     let app = Router::new()
+        .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .route("/", get(|| async { "Hello, World!" }))
-        .route("/moods", get(get_moods_handler))
-        .route("/moods", post(post_moods_handler))
+        .route("/moods", get(endpoints::get_moods_handler))
+        .route("/moods/range", get(endpoints::get_moods_between_dates_handler))
+        .route("/moods/{id}", get(endpoints::get_mood_by_id_handler))
+        .route("/moods", put(endpoints::put_moods_handler))
+        .route("/moods/day/{day}", delete(endpoints::delete_mood_by_day_handler))
         .with_state(state)
         .layer(cors_layer);
 

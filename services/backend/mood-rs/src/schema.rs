@@ -3,7 +3,7 @@
 diesel::table! {
     moods (id) {
         id -> Uuid,
-        timestamp -> Timestamptz,
+        day -> Date,
         moodlevel -> Text,
     }
 }
