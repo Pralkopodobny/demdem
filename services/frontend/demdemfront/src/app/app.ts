@@ -1,7 +1,5 @@
-import { Component, computed, inject, signal } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { DefaultService } from './api';
-import { toSignal } from '@angular/core/rxjs-interop';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
@@ -9,7 +7,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
   styleUrl: './app.css'
 })
 export class App {
-  client = inject(DefaultService);
-  protected readonly moo = signal('xd'); //toSignal(this.client.getMood(), { initialValue: [] });
+  protected readonly moo = signal('xd');
   protected readonly title = signal('demdemfront');
 }
