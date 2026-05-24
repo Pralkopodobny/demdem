@@ -10,7 +10,9 @@ use std::io::Write;
 use utoipa::ToSchema;
 use uuid::Uuid;
 
-#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, ToSchema, AsExpression, FromSqlRow)]
+#[derive(
+    Debug, Clone, Copy, PartialEq, Serialize, Deserialize, ToSchema, AsExpression, FromSqlRow,
+)]
 #[diesel(sql_type = Text)]
 #[serde(rename_all = "lowercase")]
 pub enum MoodLevel {

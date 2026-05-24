@@ -1,17 +1,17 @@
-use diesel::prelude::*;
-use std::sync::Arc;
-use axum::extract::{Path, Query, State};
-use axum::http::StatusCode;
-use axum::Json;
-use axum::response::IntoResponse;
 use crate::models::Mood;
 use crate::schema::moods::dsl::moods;
+use axum::Json;
+use axum::extract::{Path, Query, State};
+use axum::http::StatusCode;
+use axum::response::IntoResponse;
+use diesel::prelude::*;
+use std::sync::Arc;
 
+use crate::state::AppState;
+use crate::{CreateMood, MoodRangeQuery};
 use diesel::insert_into;
 use diesel_async::RunQueryDsl;
 use uuid::Uuid;
-use crate::{CreateMood, MoodRangeQuery};
-use crate::state::AppState;
 
 #[utoipa::path(
     get,
@@ -73,7 +73,6 @@ pub(crate) async fn get_moods_between_dates_handler(
     Ok(Json(result))
 }
 
-
 #[utoipa::path(
     get,
     path = "/moods/{id}",
@@ -111,7 +110,6 @@ pub(crate) async fn get_mood_by_id_handler(
         None => Err(StatusCode::NOT_FOUND),
     }
 }
-
 
 #[utoipa::path(
     put,

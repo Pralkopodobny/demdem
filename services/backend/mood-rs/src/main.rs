@@ -1,18 +1,18 @@
+pub mod endpoints;
 pub mod models;
 pub mod schema;
-pub mod endpoints;
 pub mod state;
 
-use axum::routing::put;
 use axum::routing::delete;
-use axum::{routing::get, Router};
+use axum::routing::put;
+use axum::{Router, routing::get};
 use chrono::NaiveDate;
 use deadpool::managed;
 use diesel::{Connection, PgConnection};
-use diesel_async::pooled_connection::deadpool::Pool;
-use diesel_async::pooled_connection::AsyncDieselConnectionManager;
 use diesel_async::AsyncPgConnection;
-use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
+use diesel_async::pooled_connection::AsyncDieselConnectionManager;
+use diesel_async::pooled_connection::deadpool::Pool;
+use diesel_migrations::{EmbeddedMigrations, MigrationHarness, embed_migrations};
 use dotenvy::dotenv;
 use serde::{Deserialize, Serialize};
 use std::env;
@@ -39,7 +39,6 @@ pub fn establish_single_connection() -> PgConnection {
     PgConnection::establish(&database_url)
         .unwrap_or_else(|_| panic!("Error connecting to {}", database_url))
 }
-
 
 use crate::state::AppState;
 
@@ -107,10 +106,16 @@ async fn main() {
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .route("/", get(|| async { "Hello, World!" }))
         .route("/moods", get(endpoints::get_moods_handler))
-        .route("/moods/range", get(endpoints::get_moods_between_dates_handler))
+        .route(
+            "/moods/range",
+            get(endpoints::get_moods_between_dates_handler),
+        )
         .route("/moods/{id}", get(endpoints::get_mood_by_id_handler))
         .route("/moods", put(endpoints::put_moods_handler))
-        .route("/moods/day/{day}", delete(endpoints::delete_mood_by_day_handler))
+        .route(
+            "/moods/day/{day}",
+            delete(endpoints::delete_mood_by_day_handler),
+        )
         .with_state(state)
         .layer(cors_layer);
 
