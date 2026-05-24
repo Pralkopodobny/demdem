@@ -18,6 +18,7 @@ dayjs.extend(utc);
 })
 export class HappinessCalendarMonth {
   viewDate = input.required<Dayjs>();
+  enableNavigation = input<boolean>(false);
 
   monthData = signal<Day[]>([]);
 
