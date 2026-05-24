@@ -3,7 +3,8 @@ pub mod schema;
 pub mod endpoints;
 pub mod state;
 
-use axum::routing::post;
+use axum::routing::put;
+use axum::routing::delete;
 use axum::{routing::get, Router};
 use chrono::NaiveDate;
 use deadpool::managed;
@@ -67,7 +68,8 @@ use utoipa_swagger_ui::SwaggerUi;
         endpoints::get_moods_handler,
         endpoints::get_moods_between_dates_handler,
         endpoints::get_mood_by_id_handler,
-        endpoints::post_moods_handler,
+        endpoints::put_moods_handler,
+        endpoints::delete_mood_by_day_handler,
     ),
     components(
         schemas(models::Mood, models::MoodLevel, CreateMood, MoodRangeQuery)
@@ -107,7 +109,8 @@ async fn main() {
         .route("/moods", get(endpoints::get_moods_handler))
         .route("/moods/range", get(endpoints::get_moods_between_dates_handler))
         .route("/moods/{id}", get(endpoints::get_mood_by_id_handler))
-        .route("/moods", post(endpoints::post_moods_handler))
+        .route("/moods", put(endpoints::put_moods_handler))
+        .route("/moods/day/{day}", delete(endpoints::delete_mood_by_day_handler))
         .with_state(state)
         .layer(cors_layer);
 

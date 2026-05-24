@@ -114,17 +114,60 @@ pub(crate) async fn get_mood_by_id_handler(
 
 
 #[utoipa::path(
-    post,
+    put,
     path = "/moods",
     request_body = CreateMood,
     responses(
-        (status = 200, description = "Mood created successfully", body = usize)
+        (status = 200, description = "Mood created or updated successfully", body = usize)
     ),
     tag = "mood"
 )]
-pub(crate) async fn post_moods_handler(
+pub(crate) async fn put_moods_handler(
     State(state): State<Arc<AppState>>,
     Json(payload): Json<CreateMood>,
+) -> Result<impl IntoResponse, StatusCode> {
+    use crate::schema::moods;
+
+    let mut connection = state
+        .pool
+        .get()
+        .await
+        .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    let result = insert_into(moods::table)
+        .values((
+            moods::moodlevel.eq(payload.moodlevel),
+            moods::day.eq(payload.day),
+            moods::id.eq(Uuid::new_v4()),
+        ))
+        .on_conflict(moods::day)
+        .do_update()
+        .set(moods::moodlevel.eq(payload.moodlevel))
+        .execute(&mut connection)
+        .await
+        .map_err(|e| {
+            eprintln!("Upsert error: {:?}", e);
+            StatusCode::INTERNAL_SERVER_ERROR
+        })?;
+
+    Ok(Json(result))
+}
+
+#[utoipa::path(
+    delete,
+    path = "/moods/day/{day_param}",
+    params(
+        ("day_param" = NaiveDate, Path, description = "Date to delete mood for")
+    ),
+    responses(
+        (status = 200, description = "Mood deleted successfully"),
+        (status = 404, description = "Mood not found")
+    ),
+    tag = "mood"
+)]
+pub(crate) async fn delete_mood_by_day_handler(
+    State(state): State<Arc<AppState>>,
+    Path(day_param): Path<chrono::NaiveDate>,
 ) -> Result<impl IntoResponse, StatusCode> {
     use crate::schema::moods::dsl::*;
 
@@ -134,15 +177,14 @@ pub(crate) async fn post_moods_handler(
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    let result = insert_into(moods)
-        .values((
-            moodlevel.eq(payload.moodlevel),
-            day.eq(payload.day),
-            id.eq(Uuid::new_v4()),
-        ))
+    let result = diesel::delete(moods.filter(day.eq(day_param)))
         .execute(&mut connection)
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
-    Ok(Json(result))
+    if result == 0 {
+        return Err(StatusCode::NOT_FOUND);
+    }
+
+    Ok(StatusCode::OK)
 }

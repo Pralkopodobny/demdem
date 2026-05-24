@@ -17,7 +17,6 @@ pub enum MoodLevel {
     Bad,
     Mid,
     Good,
-    Unset,
 }
 
 impl ToSql<Text, Pg> for MoodLevel {
@@ -26,7 +25,6 @@ impl ToSql<Text, Pg> for MoodLevel {
             MoodLevel::Bad => out.write_all(b"bad")?,
             MoodLevel::Mid => out.write_all(b"mid")?,
             MoodLevel::Good => out.write_all(b"good")?,
-            MoodLevel::Unset => out.write_all(b"unset")?,
         }
         Ok(IsNull::No)
     }
@@ -38,7 +36,6 @@ impl FromSql<Text, Pg> for MoodLevel {
             b"bad" => Ok(MoodLevel::Bad),
             b"mid" => Ok(MoodLevel::Mid),
             b"good" => Ok(MoodLevel::Good),
-            b"unset" => Ok(MoodLevel::Unset),
             _ => Err("Unrecognized mood level".into()),
         }
     }

@@ -52,15 +52,28 @@ export class MoodDataService {
   }
 
   /**
-   * Updates or creates a mood entry.
+   * Updates or creates a mood entry using PUT.
+   * If happiness is unset, it deletes the entry.
    */
   saveMood(date: Dayjs, happiness: Happiness): Observable<any> {
+    if (happiness === Happiness.unset) {
+      return this.deleteMood(date);
+    }
+
     const moodlevel = this.mapHappinessToMoodLevel(happiness);
     const body = {
       day: date.format('YYYY-MM-DD'),
       moodlevel
     };
-    return this.http.post(this.apiUrl, body);
+    return this.http.put(this.apiUrl, body);
+  }
+
+  /**
+   * Deletes a mood entry for a specific date.
+   */
+  deleteMood(date: Dayjs): Observable<any> {
+    const day = date.format('YYYY-MM-DD');
+    return this.http.delete(`${this.apiUrl}/day/${day}`);
   }
 
   private mapHappinessToMoodLevel(happiness: Happiness): string {
