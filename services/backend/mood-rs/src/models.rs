@@ -1,14 +1,14 @@
-use chrono::{DateTime, Utc};
-use diesel::prelude::*;
-use serde::{Deserialize, Serialize};
-use uuid::Uuid;
-use utoipa::ToSchema;
+use chrono::NaiveDate;
 use diesel::deserialize::{self, FromSql, FromSqlRow};
 use diesel::expression::AsExpression;
 use diesel::pg::{Pg, PgValue};
+use diesel::prelude::*;
 use diesel::serialize::{self, IsNull, Output, ToSql};
 use diesel::sql_types::Text;
+use serde::{Deserialize, Serialize};
 use std::io::Write;
+use utoipa::ToSchema;
+use uuid::Uuid;
 
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, ToSchema, AsExpression, FromSqlRow)]
 #[diesel(sql_type = Text)]
@@ -49,6 +49,6 @@ impl FromSql<Text, Pg> for MoodLevel {
 #[diesel(check_for_backend(diesel::pg::Pg))]
 pub struct Mood {
     pub id: Uuid,
-    pub timestamp: DateTime<Utc>,
+    pub day: NaiveDate,
     pub moodlevel: MoodLevel,
 }

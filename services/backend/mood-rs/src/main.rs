@@ -5,7 +5,7 @@ pub mod state;
 
 use axum::routing::post;
 use axum::{routing::get, Router};
-use chrono::{DateTime, Utc};
+use chrono::NaiveDate;
 use deadpool::managed;
 use diesel::{Connection, PgConnection};
 use diesel_async::pooled_connection::deadpool::Pool;
@@ -48,8 +48,14 @@ use crate::models::MoodLevel;
 
 #[derive(Serialize, Deserialize, ToSchema)]
 pub struct CreateMood {
-    pub timestamp: DateTime<Utc>,
+    pub day: NaiveDate,
     pub moodlevel: MoodLevel,
+}
+
+#[derive(Serialize, Deserialize, ToSchema, utoipa::IntoParams)]
+pub struct MoodRangeQuery {
+    pub from: NaiveDate,
+    pub to: NaiveDate,
 }
 
 use utoipa::OpenApi;
@@ -59,10 +65,12 @@ use utoipa_swagger_ui::SwaggerUi;
 #[openapi(
     paths(
         endpoints::get_moods_handler,
+        endpoints::get_moods_between_dates_handler,
+        endpoints::get_mood_by_id_handler,
         endpoints::post_moods_handler,
     ),
     components(
-        schemas(models::Mood, models::MoodLevel, CreateMood)
+        schemas(models::Mood, models::MoodLevel, CreateMood, MoodRangeQuery)
     ),
     tags(
         (name = "mood", description = "Mood management endpoints")
@@ -97,6 +105,8 @@ async fn main() {
         .merge(SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", ApiDoc::openapi()))
         .route("/", get(|| async { "Hello, World!" }))
         .route("/moods", get(endpoints::get_moods_handler))
+        .route("/moods/range", get(endpoints::get_moods_between_dates_handler))
+        .route("/moods/{id}", get(endpoints::get_mood_by_id_handler))
         .route("/moods", post(endpoints::post_moods_handler))
         .with_state(state)
         .layer(cors_layer);
