@@ -9,11 +9,11 @@ dayjs.extend(utc);
 
 export interface MoodEntry {
   id: string;
-  timestamp: string;
+  day: string;
   moodlevel: 'bad' | 'mid' | 'good' | 'unset';
 }
 
-export interface ProcessedMoodEntry extends Omit<MoodEntry, 'timestamp' | 'moodlevel'> {
+export interface ProcessedMoodEntry extends Omit<MoodEntry, 'day' | 'moodlevel'> {
   date: Dayjs;
   happiness: Happiness;
 }
@@ -27,13 +27,13 @@ export class MoodDataService {
   constructor(private http: HttpClient) {}
 
   /**
-   * Fetches mood entries and converts timestamps to UTC Dayjs objects.
+   * Fetches mood entries and converts date strings to UTC Dayjs objects.
    */
   getMoods(): Observable<ProcessedMoodEntry[]> {
     return this.http.get<MoodEntry[]>(this.apiUrl).pipe(
       map(entries => entries.map(entry => ({
         id: entry.id,
-        date: dayjs.utc(entry.timestamp),
+        date: dayjs.utc(entry.day),
         happiness: this.mapMoodLevelToHappiness(entry.moodlevel)
       })))
     );
@@ -57,7 +57,7 @@ export class MoodDataService {
   saveMood(date: Dayjs, happiness: Happiness): Observable<any> {
     const moodlevel = this.mapHappinessToMoodLevel(happiness);
     const body = {
-      timestamp: date.utc().format(),
+      day: date.format('YYYY-MM-DD'),
       moodlevel
     };
     return this.http.post(this.apiUrl, body);
