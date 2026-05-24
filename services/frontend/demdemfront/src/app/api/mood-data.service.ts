@@ -40,6 +40,23 @@ export class MoodDataService {
   }
 
   /**
+   * Fetches mood entries for a specific range.
+   */
+  getMoodsRange(from: Dayjs, to: Dayjs): Observable<ProcessedMoodEntry[]> {
+    const params = {
+      from: from.format('YYYY-MM-DD'),
+      to: to.format('YYYY-MM-DD')
+    };
+    return this.http.get<MoodEntry[]>(`${this.apiUrl}/range`, { params }).pipe(
+      map(entries => entries.map(entry => ({
+        id: entry.id,
+        date: dayjs.utc(entry.day),
+        happiness: this.mapMoodLevelToHappiness(entry.moodlevel)
+      })))
+    );
+  }
+
+  /**
    * Helper to map backend moodlevel string to Happiness enum.
    */
   mapMoodLevelToHappiness(level: string): Happiness {
