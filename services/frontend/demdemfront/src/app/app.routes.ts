@@ -3,6 +3,11 @@ import {HappinessCalendar} from './components/happiness-calendar/happiness-calen
 
 export const routes: Routes = [
   {
+    path: '',
+    redirectTo: 'calendar',
+    pathMatch: 'full',
+  },
+  {
     path: 'calendar',
     component: HappinessCalendar
   }
