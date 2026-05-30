@@ -3,7 +3,7 @@
 
   <!-- Cell Content -->
   <div class="w-full h-full" [class.cursor-pointer]="active()" (click)="togglePicking()">
-    <svg viewBox="0 0 24 24" class="w-full h-full max-w-[90%] max-h-[90%]">
+    <svg viewBox="0 0 24 24" class="w-full h-full">
       @if (day().happiness !== Happiness.unset) {
         <!-- The Heart -->
         <path
